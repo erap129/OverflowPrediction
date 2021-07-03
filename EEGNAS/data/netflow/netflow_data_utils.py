@@ -128,30 +128,35 @@ def get_whole_netflow_data(file):
     own_as_num = os.path.basename(file).split('_')[0]
     vols = {}
     dfs = []
-    for index, row in orig_df.iterrows():
-        vols[row['id']] = [row['ts'], row['vol']]
-    idx = 0
-    for key, value in vols.items():
-        datetimes = [datetime.utcfromtimestamp(int(tm)) for tm in json.loads(value[0])]
-        df = pd.DataFrame(list(zip(datetimes, json.loads(value[1]))), columns=['ts', orig_df.iloc[idx]['id']])
-        df = df.sort_values(by='ts')
-        df.index = pd.to_datetime(df['ts'])
-        df = df.drop(columns=['ts'])
-        df = df.resample('H').pad()
-        dfs.append(df)
-        idx += 1
-    all_data = pd.concat(dfs, axis=1)
-    all_data = all_data.dropna(thresh=len(all_data) - (len(all_data) / 8), axis=1)
-    if global_vars.get('drop_self') and int(own_as_num) in all_data.columns:
-        all_data = all_data.drop(int(own_as_num), axis=1)
-    if global_vars.get('interpolate_netflow'):
-        all_data = all_data.interpolate(limit_direction='both')
+    if 'vol' in orig_df.columns:
+        for index, row in orig_df.iterrows():
+            vols[row['id']] = [row['ts'], row['vol']]
+        idx = 0
+        for key, value in vols.items():
+            datetimes = [datetime.utcfromtimestamp(int(tm)) for tm in json.loads(value[0])]
+            df = pd.DataFrame(list(zip(datetimes, json.loads(value[1]))), columns=['ts', orig_df.iloc[idx]['id']])
+            df = df.sort_values(by='ts')
+            df.index = pd.to_datetime(df['ts'])
+            df = df.drop(columns=['ts'])
+            df = df.resample('H').pad()
+            dfs.append(df)
+            idx += 1
+        all_data = pd.concat(dfs, axis=1)
+        all_data = all_data.dropna(thresh=len(all_data) - (len(all_data) / 8), axis=1)
+        if global_vars.get('drop_self') and int(own_as_num) in all_data.columns:
+            all_data = all_data.drop(int(own_as_num), axis=1)
+        if global_vars.get('interpolate_netflow'):
+            all_data = all_data.interpolate(limit_direction='both')
+        else:
+            all_data = all_data.dropna(axis=1, how='any')
+        if global_vars.get('netflow_drop_others'):
+            all_data = all_data.drop(-101, axis=1, errors='ignore')
     else:
-        all_data = all_data.dropna(axis=1, how='any')
-    if global_vars.get('netflow_drop_others'):
-        all_data = all_data.drop(-101, axis=1, errors='ignore')
-    all_data['sum'] = all_data.drop(labels=int(own_as_num), axis=1, errors='ignore').sum(axis=1)
-    all_data = all_data[np.flatnonzero(df.index.hour == global_vars.get('start_hour'))[0]:]
+        all_data = orig_df
+        all_data.index = pd.to_datetime(all_data['ts'])
+        all_data = all_data.drop(columns=['ts'])
+    all_data['sum'] = all_data.drop(labels=own_as_num, axis=1, errors='ignore').sum(axis=1)
+    all_data = all_data[np.flatnonzero(all_data.index.hour == global_vars.get('start_hour'))[0]:]
     return all_data
 
 

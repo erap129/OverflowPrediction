@@ -1,31 +1,50 @@
-## EEGNAS: an EEG-targeted Neural architecture search algorithm
+## Overflow Prediction: Algorithm for detecting overflows in internet traffic, using automatically generated convolutional neural networks
 
-###Instructions to run cross/per subject experiment on the BCI Competition IV 2a dataset:
-1. git clone the project to your machine
-2. from the main folder 'BCI_Benchmarks' run: `python EEGNAS_experiment.py -e cross_per_subject`
-3. This will run 2 experiment configurations:
-    1. Cross subject directed NAS (initial data loading takes ~1 min)
-    2. Per subject directed NAS
-    
-* Note: On a high-end Nvidia GPU each configuration should take 1-2 days to complete.
-* For test purposes, it is possible to edit the 'config.ini' file, located in the 'configurations' folder.
-    * For example, the property 'num_generations' can be changed from 75 to any other number, in order to get shorter run-times (and worse results).
+###Instructions to run the algorithm on the provided sample dataset, with pre-provided neural network architectures:
 
-###Instructions to run mixed data experiment on the BCI Competition IV 2a dataset:
-* steps equivalent to the previous experiment, except stage 2:
-2. from the main folder 'BCI_Benchmarks' run: `python BCI_IV_2a_experiment.py -e cross_per_subject`
-    
-### Additional Notes
-* Datasets:
-    * The BCI Competition IV 2a dataset is included in the repository. No further action required.
-    * BCI Competition IV 2b dataset - taken from the [moabb](https://github.com/NeuroTechX/moabb) BCI toolbox.
-    * High Gamma dataset - need to [download manually](https://web.gin.g-node.org/robintibor/high-gamma-dataset) and move to the folder 'data/HG'
-    * Inria BCI dataset - need to [download from kaggle](https://www.kaggle.com/c/inria-bci-challenge/data) and move to the folder 'data/NER15'
-    * Opportunity dataset - need to download manually and move to the folder 'data/Opportunity'. Use preproccesing code from [this repository](https://github.com/guillaume-chevalier/HAR-stacked-residual-bidir-LSTMs/blob/master/data/download_datasets.py) to obtain the file 'oppChallenge_gestures.data', which needs to be put in the folder 'data/Opportunity'
 
-* The Moabb package is required to run EEGNAS, it isn't available on pip, but can be downloaded manually from git here: https://github.com/NeuroTechX/moabb
-* EEGNAS is **work in progress**. In the future will be added an option to automatically analyze your own data and receive a neural architecture. Meanwhile, interested users can try to understand the NAS process themselves and add their own DB (the main task is to edit the file BCI_IV_2a_experiment.py and configurtions/config.ini)
-* The repository is **heavy** because of the BCI Competition IV 2a dataset. It may take a while to download.
+###Instructions to run the algorithm on your own dataset  
+#### This process contains several phases:
+#### 1. Split the data into K folds
+1. The data format should be exactly the same as the provided sample data files in
+EEGNAS/data/overflow_prediction. Each autonomous system's data should be in a single CSV files named
+<AS_name>_<date_range>.csv.  
+The columns of the CSV file are as so:  
+   * ts - hourly timestamps in the format: dd:mm:yyyy hh:mm:ss
+    * <AS_name> - traffic volumes for the private network interface
+    * <handover_1> - traffic volumes for the first non-PNI handover
+    * <handover_2> - traffic volumes for the second non-PNI handover
+    * ...  
+    A name for the dataset should be chosen, and then the files should be inserted in
+  EEGNAS/data/<dataset_name>.
+
+2. make sure that the entry `export_data_folder = ["../EEGNAS/data"]` appears in
+overflow_prediction/netflow_config.ini, under the category `[overflow_prediction_kfold]`.  
+The entry `autonomous_systems` should contain the following: `[["<AS_name_1>","<AS_name_2>",...]]`.  
+The entry `handovers` should contain the following: `[["<AS_name_1>","<AS_name_2>",...,"<handover_name_1>","<handover_name_2>",...]]`.  
+The entry `as_to_test` should contain the following: `["<AS_name_1>","<AS_name_2>",...]`.  
+   
+3. You can now run the script that splits the data into folds. Run `python prediction_experiment overflow_prediction_kfold`
+and in the folder EEGNAS/data you should find `K` directories for the `K` folds created. Each directory will
+contain the following files: `X_train.npy, X_test.npy, y_train.npy, y_test.npy`.
+   
+#### 2. Run The NAS algorithm to create K CNN ensembles for the K data folds.
+1. In EEGNAS/configurations/config.ini, change the entry `dataset` under the category `[overflow_prediction_byfold]`
+to contain the name of the folders that were created in the previous step. For example: `dataset = ["overflow_prediction_per_handover_fold_0","overflow_prediction_per_handover_fold_1",...]`
+2. Run `python EEGNAS_experiment.py -e overflow_prediction_byfold`. This run can take several minutes up to several hours,
+depending on the available hardware and on the size of the dataset.
+3. After the run finishes you should have `K` new folders in results. Each folder contains the name of the dataset
+and the fold it belongs to, for example `4_3_overflow_prediction_per_handover_fold_0`. Each such folder
+contains a file ending with `architectures.p`. Copy each such `architectures` file into the folder
+overflow_prediction/eegnas_models. Thus, overflow_prediction/eegnas_models should contain 10 new files with NN architectures,
+one file for each fold of the data.  
+
+#### 3. Run the overflow prediction experiment using NAS-generated CNN ensembles  
+1. Run `python overflow_prediction/prediction_experiment.py overflow_prediction_kfold`
+2. The results are stored in the most recent folder in overflow_prediction/prediction_results,
+under the file name `all_classification_results.csv`.
+* The provided sample data is randomly generated, thus the actual performance for this dataset is irrelevant.
+
 
 ### Citing
 * If you use this code in a scientific publication, please cite us as:

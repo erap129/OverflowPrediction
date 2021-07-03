@@ -50,6 +50,7 @@ def parse_args(args):
     parser.add_argument("-g", "--garbage", help="Use garbage time", default='f')
     parser.add_argument("-d", "--drive", help="Save results to google drive", default='f')
     parser.add_argument("-dm", "--debug_mode", action='store_true', help="debug mode, don't save results to disk")
+    parser.add_argument("-us", "--use_sacred", action='store_true', help="Log results to sacred")
     return parser.parse_args(args)
 
 
@@ -315,11 +316,11 @@ if __name__ == '__main__':
                 if global_vars.get('include_params_folder_name'):
                     multiple_values.extend(global_vars.get('include_params_folder_name'))
                 FIRST_RUN = False
-            exp_name = f"{exp_id}_{index+1}_{experiment}"
+            exp_name = f"{exp_id}_{index+1}_{global_vars.get('dataset')}"
             exp_name = add_params_to_name(exp_name, multiple_values)
             ex.config = {}
             ex.add_config({**configuration, **{'tags': [exp_id]}})
-            if len(ex.observers) == 0 and not args.debug_mode:
+            if len(ex.observers) == 0 and args.use_sacred:
                 ex.observers.append(MongoObserver.create(url=f'mongodb://{global_vars.get("mongodb_server")}'
                                                              f'/{global_vars.get("mongodb_name")}',
                                                      db_name=global_vars.get("mongodb_name")))
