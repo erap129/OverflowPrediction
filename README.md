@@ -1,4 +1,5 @@
 ## Overflow Prediction: Algorithm for detecting overflows in internet traffic, using automatically generated convolutional neural networks
+![overflow predictio schema](overflow_prediction_schema.jpg "Overflow Prediction Schema")
 
 ###Instructions to run the algorithm on the provided sample dataset, with pre-provided neural network architectures:
 
