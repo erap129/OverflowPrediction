@@ -1,10 +1,19 @@
 ## Overflow Prediction: Algorithm for detecting overflows in internet traffic, using automatically generated convolutional neural networks
-![overflow predictio schema](overflow_prediction_schema.jpg "Overflow Prediction Schema")
+![overflow prediction schema](overflow_prediction_schema.jpg "Overflow Prediction Schema")
 
-###Instructions to run the algorithm on the provided sample dataset, with pre-provided neural network architectures:
+### Sample provided dataset:
+The provided sample dataset simulates a network with two autonomous systems: `1, 2`,
+and three non-PNI handovers: `11, 12, 13`. The following schema explains the sample dataset's structure:
+![sample_dataset schema](sample_dataset.png "Sample Dataset Schema")  
+The dataset is split into two files, one per autonomous system. The files are in EEGNAS/overflow_prediction.
+Additionally, 10 other folders are available in EEGNAS/data which are: 
+`overflow_prediction_per_handover_fold_0, overflow_prediction_per_handover_fold_1, ..., overflow_prediction_per_handover_fold_9`.
 
-
-###Instructions to run the algorithm on your own dataset  
+### Instructions to run the algorithm on the provided sample dataset, with pre-provided neural network architectures:
+Assuming the settings in [overflow_prediction/netflow_config.ini](overflow_prediction/netflow_config.ini) have
+not been changed, run `python overflow_prediction/prediction_experiment overflow_prediction_kfold`.
+This will run the 10-fold experiment, as explained in the paper, on the provided sample dataset.
+### Instructions to run the algorithm on your own dataset  
 #### This process contains several phases:
 #### 1. Split the data into K folds
 1. The data format should be exactly the same as the provided sample data files in
