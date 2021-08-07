@@ -354,7 +354,8 @@ def train_model_for_netflow(model, dataset):
         train_autokeras_for_netflow(model, dataset)
     elif 'Ensemble' in type(model).__name__:
         for mod in model.models:
-            mod.cuda()
+            if global_vars.get('cuda'):
+                mod.cuda()
             mod.train()
             train_model_for_netflow(mod, dataset)
         if type(model) == BasicEnsemble:
