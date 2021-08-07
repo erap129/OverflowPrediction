@@ -11,7 +11,9 @@ and three non-PNI handovers: `11, 12, 13`. The following schema explains the sam
 ![sample_dataset schema](sample_dataset.png "Sample Dataset Schema")    
 The dataset is split into two files, one per autonomous system. The files are in [EEGNAS/data/overflow_prediction](EEGNAS/data/overflow_prediction).
 Additionally, 10 other folders are available in [EEGNAS/data](EEGNAS/data) which are: 
-`overflow_prediction_per_handover_fold_0, overflow_prediction_per_handover_fold_1, ..., overflow_prediction_per_handover_fold_9`.  
+`overflow_prediction_per_handover_fold_0, overflow_prediction_per_handover_fold_1, ..., overflow_prediction_per_handover_fold_9`. Note
+that this will run the experiment with pre-trained models, which are in 
+[overflow_prediction/kfold_models](overflow_prediction/kfold_models)
   
 * Note - The code will run without GPU by default. If you have a GPU and CUDA installed, please go into
 [overflow_prediction/netflow_config.ini](overflow_prediction/netflow_config.ini) and under
