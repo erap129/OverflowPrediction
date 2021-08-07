@@ -5,7 +5,7 @@
 The provided sample dataset simulates a network with two autonomous systems: `1, 2`,
 and three non-PNI handovers: `11, 12, 13`. The following schema explains the sample dataset's structure:  
 ![sample_dataset schema](sample_dataset.png "Sample Dataset Schema")    
-The dataset is split into two files, one per autonomous system. The files are in [EEGNAS/overflow_prediction](EEGNAS/overflow_prediction).
+The dataset is split into two files, one per autonomous system. The files are in [EEGNAS/data/overflow_prediction](EEGNAS/data/overflow_prediction).
 Additionally, 10 other folders are available in [EEGNAS/data](EEGNAS/data) which are: 
 `overflow_prediction_per_handover_fold_0, overflow_prediction_per_handover_fold_1, ..., overflow_prediction_per_handover_fold_9`.
 
