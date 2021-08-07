@@ -11,13 +11,7 @@ and three non-PNI handovers: `11, 12, 13`. The following schema explains the sam
 ![sample_dataset schema](sample_dataset.png "Sample Dataset Schema")    
 The dataset is split into two files, one per autonomous system. The files are in [EEGNAS/data/overflow_prediction](EEGNAS/data/overflow_prediction).
 Additionally, 10 other folders are available in [EEGNAS/data](EEGNAS/data) which are: 
-`overflow_prediction_per_handover_fold_0, overflow_prediction_per_handover_fold_1, ..., overflow_prediction_per_handover_fold_9`. Note
-that this will run the experiment with pre-trained models, which are in 
-[overflow_prediction/kfold_models](overflow_prediction/kfold_models)
-  
-* Note - The code will run without GPU by default. If you have a GPU and CUDA installed, please go into
-[overflow_prediction/netflow_config.ini](overflow_prediction/netflow_config.ini) and under
-  `[overflow_prediction_kfold]`, turn the setting `cuda` into `true` and `force_gpu_off` into `false`.
+`overflow_prediction_per_handover_fold_0, overflow_prediction_per_handover_fold_1, ..., overflow_prediction_per_handover_fold_9`.
 
 ### Instructions to run the algorithm on the provided sample dataset, with pre-provided neural network architectures:
 Assuming the settings in [overflow_prediction/netflow_config.ini](overflow_prediction/netflow_config.ini) have
@@ -25,7 +19,12 @@ not been changed, run `python overflow_prediction/prediction_experiment overflow
 This will run the 10-fold experiment, as explained in the paper, on the provided sample dataset.  
 Results will be saved in [overflow_prediction/prediction_results](overflow_prediction/prediction_results) -- a new
 folder will be created with the results for the k-fold test. The file `all_classification_reports.csv` in this
-folder will contain a summary of the results, by autonomous system.
+folder will contain a summary of the results, by autonomous system. Note that this will run the experiment with pre-trained models, which are in 
+[overflow_prediction/kfold_models](overflow_prediction/kfold_models)  
+  
+* Note - The code will run without GPU by default. If you have a GPU and CUDA installed, please go into
+[overflow_prediction/netflow_config.ini](overflow_prediction/netflow_config.ini) and under
+  `[overflow_prediction_kfold]`, turn the setting `cuda` into `true` and `force_gpu_off` into `false`.
 ### Instructions to run the algorithm on your own dataset  
 #### This process contains several phases:
 #### 1. Split the data into K folds
