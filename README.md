@@ -71,6 +71,14 @@ under the file name `all_classification_results.csv`.
 ### Citing
 * If you use this code in a scientific publication, please cite us as:
 ```
+@article{rapaport2021spillover,
+  title={Spillover today? Predicting traffic overflows on private peering of major content providers},
+  author={Rapaport, Elad and Poese, Ingmar and Zilberman, Polina and Holschke, Oliver and Puzis, Rami},
+  journal={IEEE Transactions on Network and Service Management},
+  year={2021},
+  publisher={IEEE}
+}
+
 @inproceedings{eegnas,
 	title={EEGNAS : Neural Architecture Search for Electroencephalography Data Analysis and Decoding},
 	author={Elad Rapaport, Oren Shriki, Rami Puzis},
